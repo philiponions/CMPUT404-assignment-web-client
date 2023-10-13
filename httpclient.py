@@ -23,7 +23,6 @@ import socket
 import re
 # you may use urllib to encode data appropriately
 import urllib.parse
-import json
 
 def help():
     print("httpclient.py [GET/POST] [URL]\n")
@@ -49,7 +48,6 @@ class HTTPClient(object):
 
     def get_body(self, data):
         body_index = data.find('\r\n\r\n')
-        # print(body_index)
         return data[body_index+4:]
     
     def sendall(self, data):
@@ -64,7 +62,6 @@ class HTTPClient(object):
         done = False
         while not done:            
             part = sock.recv(1024)    
-            print(part)
             if (part):
                 buffer.extend(part)
             else:
@@ -83,10 +80,6 @@ class HTTPClient(object):
             host = o.hostname
             path = o.path if "/" in o.path else "/"
 
-            print("scheme:", scheme)
-            print("host:", host)
-            print("port:", port)
-            print("path:", path)
             self.connect(host, port)
 
         # TODO: use urllib.parse
@@ -95,15 +88,9 @@ class HTTPClient(object):
                       f"Host: {host}\r\n" \
                       f"Connection: close\r\n" \
                       f"\r\n"
-                      
-            print("Message:")
-            print(message)
-            self.sendall(message)            
+            self.sendall(message)                        
             body = self.recvall(self.socket)          
-            self.close()
-            # code = self.get_code(body)
-            print("body:")
-            print(body)        
+            self.close()      
             body = str(body)    
             code = self.get_code(body)                
             body = self.get_body(body)
@@ -111,7 +98,6 @@ class HTTPClient(object):
             print(e)      
             body = ""
         
-        print(code)
         print(body)
         
         return HTTPResponse(code, body)
@@ -145,8 +131,7 @@ class HTTPClient(object):
                 f"{post_data}"
 
         try:
-            self.sendall(message)        
-            self.socket.shutdown(socket.SHUT_WR)        
+            self.sendall(message)          
             body = self.recvall(self.socket)
             self.close()
             code = self.get_code(body)   
@@ -157,13 +142,10 @@ class HTTPClient(object):
             body  = b""
         
         
-        print("result:")
-        print(code)
         print(body)
         return HTTPResponse(code, body)
 
     def command(self, url, command="GET", args=None):
-        print(url)
         if (command == "POST"):
             return self.POST( url, args )
         else:
