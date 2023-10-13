@@ -81,8 +81,6 @@ class HTTPClient(object):
             path = o.path if "/" in o.path else "/"
 
             self.connect(host, port)
-
-        # TODO: use urllib.parse
         
             message = f"GET {path} HTTP/1.1\r\n" \
                       f"Host: {host}\r\n" \
@@ -92,11 +90,13 @@ class HTTPClient(object):
             body = self.recvall(self.socket)          
             self.close()      
             body = str(body)    
+
+            # Change the status code
             code = self.get_code(body)                
             body = self.get_body(body)
         except Exception as e:     
             print(e)      
-            body = ""
+            body = "" # Return empty string if error
         
         print(body)
         
@@ -112,7 +112,7 @@ class HTTPClient(object):
         host = o.hostname
         path = o.path
         
-        post_data = ""  # Replace with your data
+        post_data = ""
         
         if args:
             for i, (key, value) in enumerate(args.items()):
@@ -140,8 +140,7 @@ class HTTPClient(object):
         except Exception as e:            
             print(e)
             body  = b""
-        
-        
+                
         print(body)
         return HTTPResponse(code, body)
 
